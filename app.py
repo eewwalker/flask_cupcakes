@@ -43,7 +43,6 @@ def get_cupcake_details(cupcake_id):
     return jsonify(cupcake=serialized)
 
 
-
 @app.post('/api/cupcakes')
 def create_cupcake():
     """Creates a new cupcake:
@@ -66,6 +65,7 @@ def create_cupcake():
 
     return (jsonify(cupcake=serialized), 201)
 
+
 @app.patch("/api/cupcakes/<int:cupcake_id>")
 def patch_cupcake(cupcake_id):
     """ Update part of cupcake data
@@ -76,16 +76,28 @@ def patch_cupcake(cupcake_id):
     """
     cupcake = Cupcake.query.get_or_404(cupcake_id)
 
-    cupcake.flavor=request.json.get('flavor', cupcake.flavor),
-    cupcake.size=request.json.get('size', cupcake.size),
-    cupcake.rating=request.json.get('rating', cupcake.rating),
-    cupcake.image_url=request.json.get('image_url', cupcake.image_url)
+    cupcake.flavor = request.json.get('flavor', cupcake.flavor),
+    cupcake.size = request.json.get('size', cupcake.size),
+    cupcake.rating = request.json.get('rating', cupcake.rating),
+    cupcake.image_url = request.json.get(
+        'image_url', cupcake.image_url) or "https://tinyurl.com/demo-cupcake"
 
     db.session.commit()
 
     serialized = cupcake.serialize()
 
-    return jsonify(cupcake = serialized)
+    return jsonify(cupcake=serialized)
 
 
+@app.delete("/api/cupcakes/<int:cupcake_id>")
+def delete_cupcake(cupcake_id):
+    """Deletes cupcake associated with accepted cupcake_id.
 
+    Returns deleted cupcake_id as JSON {deleted: [cupcake_id]}"""
+
+    cupcake = Cupcake.query.get_or_404(cupcake_id)
+
+    db.session.delete(cupcake)
+    db.session.commit()
+
+    return jsonify({"deleted": cupcake_id})
