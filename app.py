@@ -42,7 +42,6 @@ def get_cupcake_details(cupcake_id):
 
     return jsonify(cupcake=serialized)
 
-# TODO: update all doctrings, add data to accept and response
 
 
 @app.post('/api/cupcakes')
@@ -66,3 +65,27 @@ def create_cupcake():
     serialized = new_cupcake.serialize()
 
     return (jsonify(cupcake=serialized), 201)
+
+@app.patch("/api/cupcakes/<int:cupcake_id>")
+def patch_cupcake(cupcake_id):
+    """ Update part of cupcake data
+
+    Accepts JSON of data to be updated {id, flavor, size, rating, image_url}
+    Returns JSON {cupcake: {id, flavor, size, rating, image_url}}
+
+    """
+    cupcake = Cupcake.query.get_or_404(cupcake_id)
+
+    cupcake.flavor=request.json.get('flavor', cupcake.flavor),
+    cupcake.size=request.json.get('size', cupcake.size),
+    cupcake.rating=request.json.get('rating', cupcake.rating),
+    cupcake.image_url=request.json.get('image_url', cupcake.image_url)
+
+    db.session.commit()
+
+    serialized = cupcake.serialize()
+
+    return jsonify(cupcake = serialized)
+
+
+

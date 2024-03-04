@@ -11,8 +11,9 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
 
-#TODO: add docstring
 class Cupcake(db.Model):
+    """ Cupcake model creates cupcake instances """
+
     __tablename__ = "cupcakes"
 
     id = db.Column(
