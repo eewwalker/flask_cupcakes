@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+
 def connect_db(app):
     """Connect to the database"""
 
@@ -10,6 +11,7 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
 
+#TODO: add docstring
 class Cupcake(db.Model):
     __tablename__ = "cupcakes"
 
@@ -17,7 +19,7 @@ class Cupcake(db.Model):
         db.Integer,
         primary_key=True,
         autoincrement=True
-        )
+    )
     flavor = db.Column(
         db.String(50),
         nullable=False
@@ -33,16 +35,17 @@ class Cupcake(db.Model):
     image_url = db.Column(
         db.String(500),
         nullable=False,
-        default= "https://tinyurl.com/demo-cupcake"
+        default="https://tinyurl.com/demo-cupcake"
     )
 
     def serialize(self):
         """ Serialize to dictionary """
-        return{
+
+        return {
 
             "id": self.id,
             "flavor": self.flavor,
-            "size" : self.size,
+            "size": self.size,
             "rating": self.rating,
             "image_url": self.image_url
         }
