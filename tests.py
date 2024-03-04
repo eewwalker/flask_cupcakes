@@ -49,6 +49,7 @@ class CupcakeViewsTestCase(TestCase):
         db.session.rollback()
 
     def test_list_cupcakes(self):
+        """ Test get route; get data on all cupcakes """
         with app.test_client() as client:
             resp = client.get("/api/cupcakes")
 
@@ -66,6 +67,7 @@ class CupcakeViewsTestCase(TestCase):
             })
 
     def test_get_cupcake(self):
+        """ Test get route; get data on cupcake """
         with app.test_client() as client:
             url = f"/api/cupcakes/{self.cupcake_id}"
             resp = client.get(url)
@@ -83,6 +85,7 @@ class CupcakeViewsTestCase(TestCase):
             })
 
     def test_create_cupcake(self):
+        """ Test post route; create new cupcake in db """
         with app.test_client() as client:
             url = "/api/cupcakes"
             resp = client.post(url, json=CUPCAKE_DATA_2)
@@ -107,6 +110,7 @@ class CupcakeViewsTestCase(TestCase):
             self.assertEqual(Cupcake.query.count(), 2)
 
     def test_patch_cupcake(self):
+        """ Test patch route; update data in db """
         with app.test_client() as client:
             url = f"/api/cupcakes/{self.cupcake_id}"
             resp = client.patch(url, json={"flavor": "new_flavor", "rating": 100})
@@ -122,3 +126,19 @@ class CupcakeViewsTestCase(TestCase):
                 "image_url": "http://test.com/cupcake.jpg"
                 }
             })
+
+    def test_delete_cupcake(self):
+        """ Test delete route; delete cupcake from db """
+        with app.test_client() as client:
+            url = f"/api/cupcakes/{self.cupcake_id}"
+            resp = client.delete(url)
+
+            self.assertEqual(resp.status_code, 200)
+
+            self.assertEqual(resp.json, {
+                 "deleted": self.cupcake_id
+            })
+
+            resp = client.delete(url)
+
+            self.assertEqual(resp.status_code, 404)
