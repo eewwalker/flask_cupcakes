@@ -10,46 +10,65 @@ async function getCupcakes() {
   return data.cupcakes;
 }
 
+function htmlMarkup({ flavor, rating, size, image_url }) {
+
+  return (
+    `<div>${flavor}</div>
+      <div>${rating}</div>
+      <div>${size}</div>
+      <div><img src="${image_url}" style="height: 150px"></img></div>`
+  );
+}
+
 function displayCupcakes(cupcakes) {
   for (const cupcake of cupcakes) {
-    console.log(cupcake);
-    const $liCupcake = $("<li>").html(cupcake.flavor, cupcake.rating, cupcake.size, cupcake.image_url);
+    const $liCupcake = $("<li>").html(htmlMarkup(cupcake));
     $cupcakeList.append($liCupcake);
   }
 }
 
-
-function start() {
-  const cupCakeData = getCupcakes();
+async function start() {
+  const cupCakeData = await getCupcakes();
   displayCupcakes(cupCakeData);
 }
 
-// async function addNewCupcake(evt) {
-//   evt.preventDefault();
+async function addNewCupcake(flavor, size, rating, image_url) {
 
-//   const flavor = $("#flavor").val();
-//   const size = $("#size").val();
-//   const rating = $("#rating").val();
-//   const image_url = $("#image_url").val();
+  const cupcakeData = JSON.stringify(
+    {
+      "flavor": flavor,
+      "size": size,
+      "rating": rating,
+      "image_url": image_url
+    }
+  );
 
-//   cupcake_data = JSON.stringify(
-//     {
-//       "flavor": flavor,
-//       "size": size,
-//       "rating": rating,
-//       "image_url": image_url
-//     }
-//   );
+  const response = await fetch("/api/cupcakes", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: cupcakeData
+  });
 
-//   await fetch(`${BASE_URL}/api/cupcakes`, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json"
-//     },
-//     body: cupcake_data
-//   });
-// };
+  return await response.json();
 
-// $("#new-cupcake-form").on("submit", await addNewCupcake);
+};
+
+async function handleSubmit(evt) {
+  evt.preventDefault();
+
+  const flavor = $("#flavor").val();
+  const size = $("#size").val();
+  const rating = $("#rating").val();
+  const image_url = $("#image_url").val();
+
+  const newCupcake = await addNewCupcake(flavor, size, rating, image_url);
+  const $newLI = htmlMarkup(newCupcake.cupcake);
+  $cupcakeList.append($newLI);
+}
+
+
+$("#new-cupcake-form").on("submit", handleSubmit);
 
 start();
